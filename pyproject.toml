@@ -1,0 +1,61 @@
+[project]
+name = "approck-sqlalchemy-utils"
+version = "0.1.5"
+description = "SQLAlchemy 2 helpers: declarative base, async/sync sessions, JSON and list column types, encrypted strings, Alembic revision helpers."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Aleksey Dalekin", email = "adalekin@gmail.com" }
+]
+keywords = [
+    "sqlalchemy",
+    "sqlalchemy-2",
+    "asyncpg",
+    "alembic",
+    "encryption",
+    "orm",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Typing :: Typed",
+]
+dependencies = [
+    "alembic>=1.13.1",
+    "SQLAlchemy[asyncio,mypy]>=2.0.0",
+    "cryptography>=42.0.7",
+]
+
+[project.optional-dependencies]
+postgres = [
+    "psycopg2-binary>=2.9.3",
+    "asyncpg>=0.29.0",
+]
+dev = [
+    "mypy>=1.10.0",
+    "pre-commit>=3.7.1",
+    "pytest>=8.2.2",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.4.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/adalekin/approck-sqlalchemy-utils"
+Repository = "https://github.com/adalekin/approck-sqlalchemy-utils"
+Issues = "https://github.com/adalekin/approck-sqlalchemy-utils/issues"
+
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["approck_sqlalchemy_utils*"]
