@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import text, TextClause
+from sqlalchemy import TextClause, text
 
 
 def parse(raw_orders: List[str]) -> List[TextClause]:
