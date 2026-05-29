@@ -1,5 +1,8 @@
 line-length = 120
 
+[lint]
+extend-select = ["I"]
+
 [format]
 # Like Black, use double quotes for strings.
 quote-style = "double"

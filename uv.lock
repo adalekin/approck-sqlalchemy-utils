@@ -19,7 +19,7 @@ wheels = [
 
 [[package]]
 name = "approck-sqlalchemy-utils"
-version = "0.1.5"
+version = "0.1.6"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
@@ -28,6 +28,12 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+postgres = [
+    { name = "asyncpg" },
+    { name = "psycopg2-binary" },
+]
+
+[package.dev-dependencies]
 dev = [
     { name = "mypy" },
     { name = "pre-commit" },
@@ -35,25 +41,25 @@ dev = [
     { name = "pytest-asyncio" },
     { name = "ruff" },
 ]
-postgres = [
-    { name = "asyncpg" },
-    { name = "psycopg2-binary" },
-]
 
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.13.1" },
     { name = "asyncpg", marker = "extra == 'postgres'", specifier = ">=0.29.0" },
     { name = "cryptography", specifier = ">=42.0.7" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10.0" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.7.1" },
     { name = "psycopg2-binary", marker = "extra == 'postgres'", specifier = ">=2.9.3" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.2" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.5" },
     { name = "sqlalchemy", extras = ["asyncio", "mypy"], specifier = ">=2.0.0" },
 ]
-provides-extras = ["postgres", "dev"]
+provides-extras = ["postgres"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.10.0" },
+    { name = "pre-commit", specifier = ">=3.7.1" },
+    { name = "pytest", specifier = ">=8.2.2" },
+    { name = "pytest-asyncio", specifier = ">=0.24.0" },
+    { name = "ruff", specifier = ">=0.4.5" },
+]
 
 [[package]]
 name = "async-timeout"

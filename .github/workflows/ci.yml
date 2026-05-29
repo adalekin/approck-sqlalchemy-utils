@@ -4,11 +4,18 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint-and-test:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
 
     services:
       postgres:
@@ -33,14 +40,20 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Install Python
+        run: uv python install ${{ matrix.python-version }}
+
       - name: Sync dependencies
-        run: uv sync --all-extras --frozen
+        run: uv sync --all-extras --group dev --python ${{ matrix.python-version }} --frozen
 
-      - name: Ruff check
-        run: uv run ruff check .
+      - name: Ruff (lint)
+        run: uv run --python ${{ matrix.python-version }} ruff check .
 
-      - name: Ruff format (check only)
-        run: uv run ruff format --check .
+      - name: Ruff (format)
+        run: uv run --python ${{ matrix.python-version }} ruff format --check .
+
+      - name: Mypy
+        run: uv run --python ${{ matrix.python-version }} mypy approck_sqlalchemy_utils
 
       - name: Pytest
-        run: uv run pytest
+        run: uv run --python ${{ matrix.python-version }} pytest

@@ -1,13 +1,11 @@
 [project]
 name = "approck-sqlalchemy-utils"
-version = "0.1.5"
+version = "0.1.6"
 description = "SQLAlchemy 2 helpers: declarative base, async/sync sessions, JSON and list column types, encrypted strings, Alembic revision helpers."
 readme = "README.md"
-license = "MIT"
+license = { file = "LICENSE" }
+authors = [{ name = "Aleksey Dalekin", email = "adalekin@gmail.com" }]
 requires-python = ">=3.10"
-authors = [
-    { name = "Aleksey Dalekin", email = "adalekin@gmail.com" }
-]
 keywords = [
     "sqlalchemy",
     "sqlalchemy-2",
@@ -19,6 +17,7 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -39,6 +38,21 @@ postgres = [
     "psycopg2-binary>=2.9.3",
     "asyncpg>=0.29.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/adalekin/approck-sqlalchemy-utils"
+Repository = "https://github.com/adalekin/approck-sqlalchemy-utils"
+Issues = "https://github.com/adalekin/approck-sqlalchemy-utils/issues"
+Changelog = "https://github.com/adalekin/approck-sqlalchemy-utils/releases"
+
+[build-system]
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[dependency-groups]
 dev = [
     "mypy>=1.10.0",
     "pre-commit>=3.7.1",
@@ -47,15 +61,16 @@ dev = [
     "ruff>=0.4.5",
 ]
 
-[project.urls]
-Homepage = "https://github.com/adalekin/approck-sqlalchemy-utils"
-Repository = "https://github.com/adalekin/approck-sqlalchemy-utils"
-Issues = "https://github.com/adalekin/approck-sqlalchemy-utils/issues"
+[tool.hatch.build.targets.sdist]
+include = ["/approck_sqlalchemy_utils", "/README.md", "/LICENSE"]
 
-[build-system]
-requires = ["setuptools>=77", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.hatch.build.targets.wheel]
+packages = ["approck_sqlalchemy_utils"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["approck_sqlalchemy_utils*"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
