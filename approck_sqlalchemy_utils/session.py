@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
-from typing import Any, AsyncContextManager, AsyncGenerator, Callable
+from typing import Any, AsyncContextManager, AsyncGenerator, Callable, cast
 
 from sqlalchemy import create_engine, orm
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from . import mocks
 
@@ -26,7 +26,7 @@ def async_session(
         future=True,
         **engine_kwargs,
     )
-    factory = orm.sessionmaker(
+    factory = async_sessionmaker(
         engine,
         class_=AsyncSession,
         autoflush=False,
@@ -75,4 +75,4 @@ def init(url: str, **engine_kwargs: Any) -> None:
     for _key, _session in _session_map.items():
         globals()[_key] = _session
 
-    mocks.get_session = async_dep
+    mocks.get_session = cast(Callable[..., Any], async_dep)

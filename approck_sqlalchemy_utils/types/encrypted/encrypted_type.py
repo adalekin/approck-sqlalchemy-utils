@@ -2,7 +2,13 @@ import base64
 import datetime
 import json
 import os
+from typing import Any, Callable
 
+from cryptography.exceptions import InvalidTag
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from sqlalchemy.types import String, TypeDecorator
 
 from approck_sqlalchemy_utils.exceptions import ImproperlyConfigured
@@ -10,23 +16,11 @@ from approck_sqlalchemy_utils.types.encrypted.padding import PADDING_MECHANISM
 from approck_sqlalchemy_utils.types.json import JSONType
 from approck_sqlalchemy_utils.types.scalar_coercible import ScalarCoercible
 
-cryptography = None
+_datetime_parse: Callable[[Any], Any] | None
 try:
-    import cryptography
-    from cryptography.exceptions import InvalidTag
-    from cryptography.fernet import Fernet
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives import hashes
-    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    from dateutil.parser import parse as _datetime_parse
 except ImportError:
-    pass
-
-dateutil = None
-try:
-    import dateutil
-    from dateutil.parser import parse as datetime_parse
-except ImportError:
-    pass
+    _datetime_parse = None
 
 
 class InvalidCiphertextError(Exception):
@@ -333,8 +327,6 @@ class StringEncryptedType(TypeDecorator, ScalarCoercible):
 
     def __init__(self, type_in=None, key=None, engine=None, padding=None, **kwargs):
         """Initialization."""
-        if not cryptography:
-            raise ImproperlyConfigured("'cryptography' is required to use StringEncryptedType")
         super().__init__(**kwargs)
         # set the underlying type
         if type_in is None:
@@ -433,10 +425,10 @@ class DatetimeHandler:
         or time object according to a given string
         value and a python type.
         """
-        if not dateutil:
+        if _datetime_parse is None:
             raise ImproperlyConfigured("'python-dateutil' is required to process datetimes")
 
-        return_value = datetime_parse(value)
+        return_value = _datetime_parse(value)
 
         if issubclass(python_type, datetime.datetime):
             return return_value
