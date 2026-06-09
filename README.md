@@ -148,7 +148,7 @@ Most async services still need **sync** database access sometimes (`create_all` 
 | Callable | When to use it |
 |----------|----------------|
 | `get_session` (from **`mocks`**) | FastAPI `Depends(get_session)` — see [Getting started](#getting-started). |
-| `override_session` | Same object as `mocks.get_session` after `init()`; for `async for` or internal use. Prefer **`mocks.get_session`** in route `Depends`. |
+| `override_session` | After `init()`, a `(Depends symbol, async dependency)` tuple for `app.dependency_overrides.setdefault(*override_session)`. The first element is the pre-init `mocks.get_session` callable imported at module load time. |
 | `context_session` | `async with context_session() as session:` — async tests, tasks, scripts. |
 | `current_session` | `with current_session() as session:` — sync ORM, `create_all`, CLI. |
 
