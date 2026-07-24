@@ -8,6 +8,7 @@ def parse(raw_orders: List[str]) -> List[TextClause]:
 
     for raw_order in raw_orders:
         order, direction = raw_order.split(":", 1)
-        order_clauses.append(text(f'"{order}" {direction}'))
+        quoted_order = ".".join(f'"{part}"' for part in order.split("."))
+        order_clauses.append(text(f"{quoted_order} {direction}"))
 
     return order_clauses
