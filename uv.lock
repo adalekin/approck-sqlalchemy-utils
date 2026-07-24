@@ -19,7 +19,7 @@ wheels = [
 
 [[package]]
 name = "approck-sqlalchemy-utils"
-version = "0.1.8"
+version = "0.1.9"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
