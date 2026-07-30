@@ -3,11 +3,19 @@ from typing import Iterator
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.pool import NullPool
 
 import approck_sqlalchemy_utils.session
 from tests.models import Author, Base, Book
 
-approck_sqlalchemy_utils.session.init(url="postgresql+asyncpg://postgres:postgres@localhost:5432/postgres")
+# NullPool: pytest-asyncio gives each test function its own event loop, and a pooled
+# asyncpg connection is bound to the loop that opened it. Reusing one across loops
+# raises "attached to a different loop". NullPool opens a fresh connection per use,
+# which is what lets tests that open several sessions run under the full suite.
+approck_sqlalchemy_utils.session.init(
+    url="postgresql+asyncpg://postgres:postgres@localhost:5432/postgres",
+    poolclass=NullPool,
+)
 
 
 @pytest.fixture(autouse=True, scope="session")

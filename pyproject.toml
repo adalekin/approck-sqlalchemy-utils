@@ -1,6 +1,6 @@
 [project]
 name = "approck-sqlalchemy-utils"
-version = "0.1.10"
+version = "0.2.0"
 description = "SQLAlchemy 2 helpers: declarative base, async/sync sessions, JSON and list column types, encrypted strings, Alembic revision helpers."
 readme = "README.md"
 license = { file = "LICENSE" }

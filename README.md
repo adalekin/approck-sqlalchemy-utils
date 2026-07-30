@@ -189,6 +189,46 @@ with db.current_session() as session:
 
 This repository’s `tests/conftest.py` shows `init`, `context_session`, and `current_session` together with pytest-asyncio.
 
+## Transaction boundaries
+
+`approck_sqlalchemy_utils.transaction` gives the caller-side pieces for owning a transaction across several writes, instead of letting each write commit on its own.
+
+### `atomic(session)` — own the boundary, compose safely
+
+Open a boundary once, at the place that owns a request or message (an HTTP orchestrator, a consumer handler, a scheduler tick). Everything inside commits together or not at all.
+
+```python
+from approck_sqlalchemy_utils.transaction import atomic
+
+async with atomic(session):
+    user = await UserService(session).create(user_dto)
+    await ProfileService(session).create(profile_for(user))
+# committed here on success; rolled back if the block raised
+```
+
+`atomic` is **reentrant per session**. The outermost `atomic` opens the transaction (if none is open yet) and commits or rolls back on exit. A nested `atomic` on the same session runs as a **savepoint**: an inner block can fail and roll back without discarding the outer work, and an inner success never commits the caller's transaction. This is what lets two services, each wrapping its own work in `atomic`, compose into one transaction when called together.
+
+The outermost level opens the transaction explicitly rather than relying on autobegin, so a nested savepoint always has a real transaction to nest in.
+
+The outermost `atomic` owns the **whole** transaction of that session, including any rows written to the session *before* the boundary was entered — those commit or roll back with the boundary too. Don't write to a session outside a boundary if you need that write isolated from it.
+
+### `savepoint(session)` — contain a partial failure
+
+Use `savepoint` directly when you need to contain a failure inside an already-open transaction without discarding earlier writes: dedup that retries after an `IntegrityError`, translating a database error into a domain error, or a batch where one item failing must not roll back the rest.
+
+```python
+from approck_sqlalchemy_utils.transaction import savepoint
+
+try:
+    async with savepoint(session):
+        session.add(row)
+        await session.flush()
+except IntegrityError:
+    existing = await find_existing(session)  # outer transaction is still intact
+```
+
+`savepoint` requires an active transaction and raises if there is none — a savepoint must nest inside a boundary the caller controls, never one it silently opened.
+
 ## Development
 
 Clone the repository and install with dev dependencies:
