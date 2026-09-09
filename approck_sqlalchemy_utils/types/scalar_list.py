@@ -16,7 +16,7 @@ class ScalarListType(types.TypeDecorator):
     Example ::
 
 
-        from sqlalchemy_utils import ScalarListType
+        from approck_sqlalchemy_utils.types.scalar_list import ScalarListType
 
 
         class User(Base):
@@ -35,7 +35,7 @@ class ScalarListType(types.TypeDecorator):
     ::
 
 
-        from sqlalchemy_utils import ScalarListType
+        from approck_sqlalchemy_utils.types.scalar_list import ScalarListType
 
 
         class Player(Base):
@@ -52,7 +52,7 @@ class ScalarListType(types.TypeDecorator):
     ScalarListType is always stored as text. To use an array field on
     PostgreSQL database use variant construct::
 
-        from sqlalchemy_utils import ScalarListType
+        from approck_sqlalchemy_utils.types.scalar_list import ScalarListType
 
 
         class Player(Base):

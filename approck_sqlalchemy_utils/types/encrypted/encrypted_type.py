@@ -203,6 +203,17 @@ class StringEncryptedType(TypeDecorator, ScalarCoercible):
 
     StringEncryptedType needs Cryptography_ library in order to work.
 
+    .. warning::
+
+        The default engine is :class:`AesEngine`, which is **deterministic**:
+        it derives the IV from the key, so encrypting the same plaintext always
+        produces the same ciphertext. That is what makes searching by an
+        encrypted value possible, but it also leaks equality between rows. If you
+        do not need to query by the encrypted value, pass ``engine=AesGcmEngine``
+        explicitly for a random IV and stronger confidentiality. Do not switch the
+        engine of a column that already holds data — ciphertext written by one
+        engine cannot be decrypted by another.
+
     When declaring a column which will be of type StringEncryptedType
     it is better to be as precise as possible and follow the pattern
     below.
@@ -236,8 +247,8 @@ class StringEncryptedType(TypeDecorator, ScalarCoercible):
             from sqlalchemy.ext.declarative import declarative_base
         from sqlalchemy.orm import sessionmaker
 
-        from sqlalchemy_utils import StringEncryptedType
-        from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
+        from approck_sqlalchemy_utils.types.encrypted.encrypted_type import StringEncryptedType
+        from approck_sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
         secret_key = 'secretkey1234'
         # setup
@@ -336,6 +347,8 @@ class StringEncryptedType(TypeDecorator, ScalarCoercible):
         self.underlying_type = type_in
         self._key = key
         if not engine:
+            # Deterministic AES-CBC by default (searchable, leaks equality). See the
+            # class docstring warning; pass AesGcmEngine when you don't need search.
             engine = AesEngine
         self.engine = engine()
         if isinstance(self.engine, AesEngine):

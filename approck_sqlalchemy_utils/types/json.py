@@ -30,7 +30,7 @@ class JSONType(sa.types.TypeDecorator):
     ::
 
 
-        from sqlalchemy_utils import JSONType
+        from approck_sqlalchemy_utils.types.json import JSONType
 
 
         class Product(Base):

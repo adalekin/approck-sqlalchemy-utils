@@ -13,6 +13,14 @@ AsyncSessionGenerator = AsyncGenerator[AsyncSession, None]
 get_session = mocks.get_session
 override_session = mocks.get_session
 
+# ``init()`` binds these names at runtime via ``globals()`` (see below). Declaring
+# them here gives type checkers and IDEs visibility into the module's public surface;
+# they still only exist after ``init()`` has run, which is the intended bootstrap order.
+# A deeper fix (returning a Sessions object from init instead of mutating module
+# globals) would change the public API and is intentionally out of scope here.
+current_session: orm.scoped_session
+context_session: Callable[..., AsyncContextManager[AsyncSession]]
+
 
 def async_session(
     url: str,
